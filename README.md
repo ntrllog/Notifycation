@@ -2,6 +2,8 @@
 
 An Android app that creates reminders in the form of notifications
 
+App available on [Google Play Store](https://play.google.com/store/apps/details?id=ntrllog.github.io.notifycation)
+
 ## Important (kinda, not really)
 
 On some devices, auto launch may need to be enabled for this app so that the notifications will load if the device is restarted
