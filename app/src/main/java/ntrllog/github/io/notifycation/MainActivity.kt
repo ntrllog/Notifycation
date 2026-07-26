@@ -102,6 +102,8 @@ class MainActivity : AppCompatActivity() {
                             putString(notification.id.toString(), json)
                         }
 
+                        adapter.notifyDataSetChanged()
+
                         val notificationServiceIntent = Intent(
                             applicationContext, NotificationService::class.java
                         )
