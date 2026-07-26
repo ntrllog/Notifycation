@@ -1,7 +1,6 @@
 package ntrllog.github.io.notifycation
 
 import android.Manifest
-import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -87,11 +86,6 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
                 Manifest.permission.POST_NOTIFICATIONS
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                context as Activity,
-                arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY),
-                999
-            )
             return
         }
         notificationManager.notify(i, mBuilder.build())

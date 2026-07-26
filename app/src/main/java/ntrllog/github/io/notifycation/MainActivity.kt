@@ -1,18 +1,25 @@
 package ntrllog.github.io.notifycation
 
+import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import java.util.UUID
 import kotlin.math.abs
+import androidx.core.content.edit
 
 class MainActivity : AppCompatActivity() {
     private val notificationArrayList = ArrayList<Notification>()
@@ -20,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listView: ListView
     private lateinit var savedNotifications: SharedPreferences // {notification_id = {"content": String, "id": String}}
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -30,6 +38,8 @@ class MainActivity : AppCompatActivity() {
 
         // show notifications in ui
         updateAdapter()
+
+        requestNotificationPermission()
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
@@ -64,10 +74,10 @@ class MainActivity : AppCompatActivity() {
                             notification.content = result
                         }
 
-                        val prefsEditor = savedNotifications.edit()
-                        val json = gson.toJson(notification)
-                        prefsEditor.putString(notification.id.toString(), json)
-                        prefsEditor.apply()
+                        savedNotifications.edit {
+                            val json = gson.toJson(notification)
+                            putString(notification.id.toString(), json)
+                        }
 
                         val notificationServiceIntent = Intent(
                             applicationContext, NotificationService::class.java
@@ -96,9 +106,9 @@ class MainActivity : AppCompatActivity() {
 
         // remove from shared preferences
         val notification = notificationArrayList[info!!.position]
-        val prefsEditor = savedNotifications.edit()
-        prefsEditor.remove(notification.id.toString())
-        prefsEditor.apply()
+        savedNotifications.edit {
+            remove(notification.id.toString())
+        }
 
         // remove from notification bar
         NotificationService.removeNotification(
@@ -117,5 +127,22 @@ class MainActivity : AppCompatActivity() {
         val timestamp = System.currentTimeMillis()
         val uniqueDeviceId = UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE
         return abs(timestamp xor uniqueDeviceId).toInt()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun requestNotificationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                NOTIFICATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    private companion object {
+        const val NOTIFICATION_PERMISSION_REQUEST_CODE = 999
     }
 }
