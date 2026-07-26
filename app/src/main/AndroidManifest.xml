@@ -26,11 +26,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".NotificationWorker"
-            android:enabled="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <receiver android:name=".NotificationReceiver"
             android:exported="false">
             <intent-filter>
