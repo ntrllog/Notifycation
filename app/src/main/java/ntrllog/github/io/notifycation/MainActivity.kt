@@ -13,8 +13,11 @@ import android.widget.AdapterView
 import android.widget.ListView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import java.util.UUID
@@ -31,6 +34,26 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        // apply status bar inset as top padding on the toolbar so it sits
+        // below the status bar instead of underneath it (targetSdk 35+
+        // enforces edge-to-edge, so we handle this ourselves)
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(view.paddingLeft, systemBars.top, view.paddingRight, view.paddingBottom)
+            insets
+        }
+
+        val rootView = findViewById<View>(R.id.main_root)
+        ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, view.paddingTop, systemBars.right, systemBars.bottom)
+            insets
+        }
+
         savedNotifications = getSharedPreferences("notifications", MODE_PRIVATE)
         adapter = NotificationAdapter(this, notificationArrayList)
         listView = findViewById(R.id.list)

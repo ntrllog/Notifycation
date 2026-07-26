@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "ntrllog.github.io.notifycation"
-    compileSdk = 34
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "ntrllog.github.io.notifycation"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
